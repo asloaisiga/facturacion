@@ -10,7 +10,7 @@ import java.io.IOException;
 public class FacturacionApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(FacturacionApplication.class.getResource("menu-principal.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(FacturacionApplication.class.getResource("/ni/edu/uam/facturacion/fxml/menu-principal.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Facturación APP");
         stage.setScene(scene);

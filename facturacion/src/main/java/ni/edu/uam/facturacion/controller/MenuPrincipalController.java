@@ -11,23 +11,16 @@ import ni.edu.uam.facturacion.FacturacionApplication;
 import java.io.IOException;
 
 public class MenuPrincipalController {
-
     @FXML
     private void abrirProductos() {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    FacturacionApplication.class.getResource(
-                            "/ni.edu.uam.facturacion.fxml/producto-view.fxml"
-                    )
-            );
-
+            FXMLLoader loader = new FXMLLoader(FacturacionApplication.class.getResource("/ni/edu/uam/facturacion/fxml/producto-view.fxml"));
             Parent root = loader.load();
 
             Stage stage = new Stage();
             stage.setTitle("Productos");
             stage.setScene(new Scene(root));
             stage.show();
-
         } catch (IOException e) {
             System.out.println("Error al abrir productos: " + e.getMessage());
             e.printStackTrace();
