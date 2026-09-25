@@ -1,6 +1,8 @@
 package ni.edu.uam.facturacion.controller;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import ni.edu.uam.facturacion.dao.CategoriaDAO;
@@ -12,104 +14,83 @@ import java.math.BigDecimal;
 
 public class ProductoController {
 
-    @FXML
-    private TextField txtCodigo;
+    @FXML private TextField txtCodigo;
+    @FXML private TextField txtNombre;
+    @FXML private ComboBox<Categoria> cmbCategoria;
+    @FXML private TextField txtPrecio;
+    @FXML private TextField txtExistencia;
+    @FXML private TextField txtRutaImagen;
+    @FXML private CheckBox chkActivo;
+    @FXML private TextField txtBuscar;
 
-    @FXML
-    private TextField txtNombre;
-
-    @FXML
-    private ComboBox<Categoria> cmbCategoria;
-
-    @FXML
-    private TextField txtPrecio;
-
-    @FXML
-    private TextField txtExistencia;
-
-    @FXML
-    private TextField txtRutaImagen;
-
-    @FXML
-    private CheckBox chkActivo;
-
-    @FXML
-    private TableView<Producto> tblProductos;
-
-    @FXML
-    private TableColumn<Producto, Integer> colId;
-
-    @FXML
-    private TableColumn<Producto, String> colCodigo;
-
-    @FXML
-    private TableColumn<Producto, String> colNombre;
-
-    @FXML
-    private TableColumn<Producto, String> colCategoria;
-
-    @FXML
-    private TableColumn<Producto, BigDecimal> colPrecio;
-
-    @FXML
-    private TableColumn<Producto, Integer> colExistencia;
-
-    @FXML
-    private TableColumn<Producto, Boolean> colActivo;
+    @FXML private TableView<Producto> tblProductos;
+    @FXML private TableColumn<Producto, Integer> colId;
+    @FXML private TableColumn<Producto, String> colCodigo;
+    @FXML private TableColumn<Producto, String> colNombre;
+    @FXML private TableColumn<Producto, String> colCategoria;
+    @FXML private TableColumn<Producto, BigDecimal> colPrecio;
+    @FXML private TableColumn<Producto, Integer> colExistencia;
+    @FXML private TableColumn<Producto, Boolean> colActivo;
 
     private final ProductoDao productoDao = new ProductoDao();
     private final CategoriaDAO categoriaDAO = new CategoriaDAO();
+    private final ObservableList<Producto> listaProductos = FXCollections.observableArrayList();
+    private FilteredList<Producto> productosFiltrados;
 
     @FXML
     public void initialize() {
         colId.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleIntegerProperty(
-                        data.getValue().getId()).asObject());
+                new javafx.beans.property.SimpleIntegerProperty(data.getValue().getId()).asObject());
 
         colCodigo.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().getCodigo()));
+                new javafx.beans.property.SimpleStringProperty(data.getValue().getCodigo()));
 
         colNombre.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().getNombre()));
+                new javafx.beans.property.SimpleStringProperty(data.getValue().getNombre()));
 
         colCategoria.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().getCategoria().getNombre()));
+                new javafx.beans.property.SimpleStringProperty(data.getValue().getCategoria().getNombre()));
 
         colPrecio.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleObjectProperty<>(
-                        data.getValue().getPrecioVenta()));
+                new javafx.beans.property.SimpleObjectProperty<>(data.getValue().getPrecioVenta()));
 
         colExistencia.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleIntegerProperty(
-                        data.getValue().getExistencia()).asObject());
+                new javafx.beans.property.SimpleIntegerProperty(data.getValue().getExistencia()).asObject());
 
         colActivo.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleBooleanProperty(
-                        data.getValue().isActivo()));
+                new javafx.beans.property.SimpleBooleanProperty(data.getValue().isActivo()));
 
         chkActivo.setSelected(true);
-
         cargarCategorias();
         cargarProductos();
+        configurarFiltro();
     }
 
     private void cargarCategorias() {
-        cmbCategoria.setItems(
-                FXCollections.observableArrayList(
-                        categoriaDAO.listarActivas()
-                )
-        );
+        cmbCategoria.setItems(FXCollections.observableArrayList(categoriaDAO.listarActivas()));
     }
 
     private void cargarProductos() {
-        tblProductos.setItems(
-                FXCollections.observableArrayList(
-                        productoDao.listar()
-                )
-        );
+        listaProductos.setAll(productoDao.listar());
+    }
+
+    private void configurarFiltro() {
+        productosFiltrados = new FilteredList<>(listaProductos, producto -> true);
+        tblProductos.setItems(productosFiltrados);
+
+        txtBuscar.textProperty().addListener((observable, anterior, nuevo) -> {
+            productosFiltrados.setPredicate(producto -> {
+                if (nuevo == null || nuevo.trim().isEmpty()) {
+                    return true;
+                }
+
+                String filtro = nuevo.toLowerCase().trim();
+
+                return producto.getCodigo().toLowerCase().contains(filtro)
+                        || producto.getNombre().toLowerCase().contains(filtro)
+                        || producto.getCategoria().getNombre().toLowerCase().contains(filtro);
+            });
+        });
     }
 
     @FXML
@@ -120,16 +101,11 @@ public class ProductoController {
 
         try {
             Producto producto = new Producto();
-
             producto.setCodigo(txtCodigo.getText().trim());
             producto.setNombre(txtNombre.getText().trim());
             producto.setCategoria(cmbCategoria.getValue());
-            producto.setPrecioVenta(
-                    new BigDecimal(txtPrecio.getText().trim())
-            );
-            producto.setExistencia(
-                    Integer.parseInt(txtExistencia.getText().trim())
-            );
+            producto.setPrecioVenta(new BigDecimal(txtPrecio.getText().trim()));
+            producto.setExistencia(Integer.parseInt(txtExistencia.getText().trim()));
             producto.setRutaImagen(txtRutaImagen.getText().trim());
             producto.setActivo(chkActivo.isSelected());
 
@@ -139,7 +115,6 @@ public class ProductoController {
             } else {
                 mostrarAlerta("No se pudo guardar el producto.");
             }
-
         } catch (NumberFormatException e) {
             mostrarAlerta("El precio y la existencia deben ser valores válidos.");
         }
@@ -191,7 +166,7 @@ public class ProductoController {
         }
 
         if (txtPrecio.getText().trim().isEmpty()) {
-            mostrarAlerta("Ingrese el precio de venta.");
+            mostrarAlerta("Ingrese el precio.");
             return false;
         }
 
