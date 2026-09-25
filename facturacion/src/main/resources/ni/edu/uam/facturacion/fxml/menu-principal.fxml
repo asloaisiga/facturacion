@@ -1,14 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.facturacion.controller.MenuPrincipalController">
+    <top>
+        <VBox>
+            <MenuBar>
+                <menus>
+                    <Menu mnemonicParsing="false" text="Archivo">
+                        <items>
+                            <MenuItem mnemonicParsing="false" onAction="#salir" text="Salir" />
+                        </items>
+                    </Menu>
+                    <Menu mnemonicParsing="false" text="Productos">
+                        <items>
+                            <MenuItem mnemonicParsing="false" onAction="#abrirProductos" text="Gestionar productos" />
+                        </items>
+                    </Menu>
+                </menus>
+            </MenuBar>
+        </VBox>
+    </top>
+    <center>
+        <VBox alignment="CENTER" spacing="15.0">
+            <padding>
+                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+            </padding>
+            <Label text="Sistema de Facturación" style="-fx-font-size: 28px; -fx-font-weight: bold;" />
+            <Label text="Persistencia de datos con PostgreSQL" style="-fx-font-size: 16px;" />
+            <Button mnemonicParsing="false" onAction="#abrirProductos" prefHeight="45.0" prefWidth="220.0" text="Gestionar Productos" />
+        </VBox>
+    </center>
+</BorderPane>
