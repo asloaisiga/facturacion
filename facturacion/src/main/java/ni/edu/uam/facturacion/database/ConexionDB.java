@@ -11,22 +11,10 @@ public class ConexionDB {
 
     private static final String USUARIO = "postgres";
 
-    private static final String PASSWORD = "TU_CONTRASEÑA";
+    private static final String PASSWORD = "2007";
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USUARIO, PASSWORD);
     }
-
-    public static void main(String[] args) {
-
-        try (Connection connection = getConnection()) {
-
-            System.out.println("Conexión exitosa con PostgreSQL");
-
-        } catch (SQLException e) {
-
-            System.out.println("Error al conectar con PostgreSQL");
-            System.out.println(e.getMessage());
-        }
-    }
+    
 }
