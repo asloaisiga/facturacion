@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Categoria {
 
-    private int id;
+    private Integer id;
     private String nombre;
     private boolean activa;
 

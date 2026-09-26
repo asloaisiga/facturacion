@@ -11,10 +11,9 @@ public class ConexionDB {
 
     private static final String USUARIO = "postgres";
 
-    private static final String PASSWORD = "2007";
+    private static final String PASSWORD = "2008";
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USUARIO, PASSWORD);
     }
-    
 }

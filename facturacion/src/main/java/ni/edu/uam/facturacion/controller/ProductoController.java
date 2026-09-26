@@ -13,24 +13,53 @@ import ni.edu.uam.facturacion.model.Producto;
 import java.math.BigDecimal;
 
 public class ProductoController {
+    @FXML
+    private TextField txtCodigo;
 
-    @FXML private TextField txtCodigo;
-    @FXML private TextField txtNombre;
-    @FXML private ComboBox<Categoria> cmbCategoria;
-    @FXML private TextField txtPrecio;
-    @FXML private TextField txtExistencia;
-    @FXML private TextField txtRutaImagen;
-    @FXML private CheckBox chkActivo;
-    @FXML private TextField txtBuscar;
+    @FXML
+    private TextField txtNombre;
 
-    @FXML private TableView<Producto> tblProductos;
-    @FXML private TableColumn<Producto, Integer> colId;
-    @FXML private TableColumn<Producto, String> colCodigo;
-    @FXML private TableColumn<Producto, String> colNombre;
-    @FXML private TableColumn<Producto, String> colCategoria;
-    @FXML private TableColumn<Producto, BigDecimal> colPrecio;
-    @FXML private TableColumn<Producto, Integer> colExistencia;
-    @FXML private TableColumn<Producto, Boolean> colActivo;
+    @FXML
+    private ComboBox<Categoria> cmbCategoria;
+
+    @FXML
+    private TextField txtPrecio;
+
+    @FXML
+    private TextField txtExistencia;
+
+    @FXML
+    private TextField txtRutaImagen;
+
+    @FXML
+    private CheckBox chkActivo;
+
+    @FXML
+    private TextField txtBuscar;
+
+    @FXML
+    private TableView<Producto> tblProductos;
+
+    @FXML
+    private TableColumn<Producto, Integer> colId;
+
+    @FXML
+    private TableColumn<Producto, String> colCodigo;
+
+    @FXML
+    private TableColumn<Producto, String> colNombre;
+
+    @FXML
+    private TableColumn<Producto, String> colCategoria;
+
+    @FXML
+    private TableColumn<Producto, BigDecimal> colPrecio;
+
+    @FXML
+    private TableColumn<Producto, Integer> colExistencia;
+
+    @FXML
+    private TableColumn<Producto, Boolean> colActivo;
 
     private final ProductoDao productoDao = new ProductoDao();
     private final CategoriaDAO categoriaDAO = new CategoriaDAO();
@@ -39,26 +68,13 @@ public class ProductoController {
 
     @FXML
     public void initialize() {
-        colId.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleIntegerProperty(data.getValue().getId()).asObject());
-
-        colCodigo.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().getCodigo()));
-
-        colNombre.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().getNombre()));
-
-        colCategoria.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().getCategoria().getNombre()));
-
-        colPrecio.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleObjectProperty<>(data.getValue().getPrecioVenta()));
-
-        colExistencia.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleIntegerProperty(data.getValue().getExistencia()).asObject());
-
-        colActivo.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleBooleanProperty(data.getValue().isActivo()));
+        colId.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getId()).asObject());
+        colCodigo.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getCodigo()));
+        colNombre.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getNombre()));
+        colCategoria.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getCategoria().getNombre()));
+        colPrecio.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue().getPrecioVenta()));
+        colExistencia.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getExistencia()).asObject());
+        colActivo.setCellValueFactory(data -> new javafx.beans.property.SimpleBooleanProperty(data.getValue().isActivo()));
 
         chkActivo.setSelected(true);
         cargarCategorias();
@@ -110,6 +126,7 @@ public class ProductoController {
             producto.setActivo(chkActivo.isSelected());
 
             if (productoDao.guardar(producto)) {
+                mostrarInformacion("Producto guardado correctamente.");
                 limpiar();
                 cargarProductos();
             } else {
@@ -130,6 +147,7 @@ public class ProductoController {
         }
 
         if (productoDao.eliminar(producto.getId())) {
+            mostrarInformacion("Producto eliminado correctamente.");
             limpiar();
             cargarProductos();
         } else {
@@ -180,6 +198,14 @@ public class ProductoController {
 
     private void mostrarAlerta(String mensaje) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Productos");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    private void mostrarInformacion(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Productos");
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
