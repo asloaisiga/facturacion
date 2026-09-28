@@ -7,6 +7,7 @@ import ni.edu.uam.facturacion.dao.CategoriaDAO;
 import ni.edu.uam.facturacion.model.Categoria;
 
 public class CategoriaController {
+
     @FXML
     private TextField txtNombre;
 
@@ -29,16 +30,34 @@ public class CategoriaController {
 
     @FXML
     public void initialize() {
-        colId.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getId()).asObject());
-        colNombre.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getNombre()));
-        colActiva.setCellValueFactory(data -> new javafx.beans.property.SimpleBooleanProperty(data.getValue().isActiva()));
+        colId.setCellValueFactory(data ->
+                new javafx.beans.property.SimpleIntegerProperty(
+                        data.getValue().getId()
+                ).asObject()
+        );
+
+        colNombre.setCellValueFactory(data ->
+                new javafx.beans.property.SimpleStringProperty(
+                        data.getValue().getNombre()
+                )
+        );
+
+        colActiva.setCellValueFactory(data ->
+                new javafx.beans.property.SimpleBooleanProperty(
+                        data.getValue().isActiva()
+                )
+        );
 
         chkActiva.setSelected(true);
         cargarCategorias();
     }
 
     private void cargarCategorias() {
-        tblCategorias.setItems(FXCollections.observableArrayList(categoriaDAO.listar()));
+        tblCategorias.setItems(
+                FXCollections.observableArrayList(
+                        categoriaDAO.listar()
+                )
+        );
     }
 
     @FXML
@@ -55,6 +74,7 @@ public class CategoriaController {
         categoria.setActiva(chkActiva.isSelected());
 
         if (categoriaDAO.guardar(categoria)) {
+            mostrarInformacion("Categoría guardada correctamente.");
             limpiar();
             cargarCategorias();
         } else {
@@ -72,6 +92,7 @@ public class CategoriaController {
         }
 
         if (categoriaDAO.eliminar(categoria.getId())) {
+            mostrarInformacion("Categoría eliminada correctamente.");
             limpiar();
             cargarCategorias();
         } else {
@@ -88,6 +109,14 @@ public class CategoriaController {
 
     private void mostrarAlerta(String mensaje) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Categorías");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    private void mostrarInformacion(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Categorías");
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
