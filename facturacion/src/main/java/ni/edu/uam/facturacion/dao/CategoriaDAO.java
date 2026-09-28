@@ -94,4 +94,26 @@ public class CategoriaDAO {
 
         return categorias;
     }
+
+    public boolean eliminar(Integer id) {
+        String sql = """
+                DELETE FROM categoria
+                WHERE id = ?
+                """;
+
+        try (
+                Connection connection = ConexionDB.getConnection();
+                PreparedStatement ps = connection.prepareStatement(sql)
+        ) {
+            ps.setInt(1, id);
+
+            int filasAfectadas = ps.executeUpdate();
+
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Error al eliminar categoría: " + e.getMessage());
+            return false;
+        }
+    }
 }
