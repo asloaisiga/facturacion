@@ -23,8 +23,7 @@ public class CategoriaDAO {
             ps.setString(1, categoria.getNombre());
             ps.setBoolean(2, categoria.isActiva());
 
-            ps.executeUpdate();
-            return true;
+            return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
             System.out.println("Error al guardar categoría: " + e.getMessage());
@@ -95,6 +94,30 @@ public class CategoriaDAO {
         return categorias;
     }
 
+    public boolean actualizar(Categoria categoria) {
+        String sql = """
+                UPDATE categoria
+                SET nombre = ?,
+                    activa = ?
+                WHERE id = ?
+                """;
+
+        try (
+                Connection connection = ConexionDB.getConnection();
+                PreparedStatement ps = connection.prepareStatement(sql)
+        ) {
+            ps.setString(1, categoria.getNombre());
+            ps.setBoolean(2, categoria.isActiva());
+            ps.setInt(3, categoria.getId());
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar categoría: " + e.getMessage());
+            return false;
+        }
+    }
+
     public boolean eliminar(Integer id) {
         String sql = """
                 DELETE FROM categoria
@@ -107,13 +130,65 @@ public class CategoriaDAO {
         ) {
             ps.setInt(1, id);
 
-            int filasAfectadas = ps.executeUpdate();
-
-            return filasAfectadas > 0;
+            return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
             System.out.println("Error al eliminar categoría: " + e.getMessage());
             return false;
         }
+    }
+
+    public boolean existeNombre(String nombre) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM categoria
+                WHERE LOWER(nombre) = LOWER(?)
+                """;
+
+        try (
+                Connection connection = ConexionDB.getConnection();
+                PreparedStatement ps = connection.prepareStatement(sql)
+        ) {
+            ps.setString(1, nombre);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al verificar categoría: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    public boolean existeNombre(String nombre, Integer idExcluir) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM categoria
+                WHERE LOWER(nombre) = LOWER(?)
+                AND id <> ?
+                """;
+
+        try (
+                Connection connection = ConexionDB.getConnection();
+                PreparedStatement ps = connection.prepareStatement(sql)
+        ) {
+            ps.setString(1, nombre);
+            ps.setInt(2, idExcluir);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al verificar categoría: " + e.getMessage());
+        }
+
+        return false;
     }
 }
