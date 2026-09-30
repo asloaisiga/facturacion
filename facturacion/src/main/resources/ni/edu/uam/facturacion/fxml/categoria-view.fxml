@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="550.0"
+<VBox prefHeight="600.0"
       prefWidth="750.0"
       spacing="15.0"
       xmlns="http://javafx.com/javafx/21"
@@ -41,6 +41,24 @@
         <Separator />
         <Label text="Categorías registradas"
                style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+        <HBox spacing="15.0">
+            <children>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label text="Buscar" />
+                        <TextField fx:id="txtBuscar"
+                                   promptText="Buscar categoría..." />
+                    </children>
+                </VBox>
+                <VBox prefWidth="180.0" spacing="5.0">
+                    <children>
+                        <Label text="Estado" />
+                        <ComboBox fx:id="cmbFiltroEstado"
+                                  maxWidth="1.7976931348623157E308" />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
         <TableView fx:id="tblCategorias"
                    VBox.vgrow="ALWAYS">
             <columns>
@@ -48,7 +66,7 @@
                              prefWidth="80.0"
                              text="ID" />
                 <TableColumn fx:id="colNombre"
-                             prefWidth="330.0"
+                             prefWidth="300.0"
                              text="Nombre" />
                 <TableColumn fx:id="colActiva"
                              prefWidth="120.0"

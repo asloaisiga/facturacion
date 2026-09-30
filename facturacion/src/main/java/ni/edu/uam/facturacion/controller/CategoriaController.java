@@ -2,6 +2,7 @@ package ni.edu.uam.facturacion.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import ni.edu.uam.facturacion.dao.CategoriaDAO;
@@ -16,6 +17,12 @@ public class CategoriaController {
 
     @FXML
     private CheckBox chkActiva;
+
+    @FXML
+    private TextField txtBuscar;
+
+    @FXML
+    private ComboBox<String> cmbFiltroEstado;
 
     @FXML
     private TableView<Categoria> tblCategorias;
@@ -37,12 +44,15 @@ public class CategoriaController {
     private final ObservableList<Categoria> categorias =
             FXCollections.observableArrayList();
 
+    private FilteredList<Categoria> categoriasFiltradas;
+
     private Categoria categoriaSeleccionada;
 
     @FXML
     public void initialize() {
         configurarColumnas();
         configurarBotonEliminar();
+        configurarFiltros();
         configurarSeleccionTabla();
         cargarCategorias();
 
@@ -71,7 +81,72 @@ public class CategoriaController {
 
     private void cargarCategorias() {
         categorias.setAll(categoriaDAO.listar());
-        tblCategorias.setItems(categorias);
+    }
+
+    private void configurarFiltros() {
+        cmbFiltroEstado.setItems(
+                FXCollections.observableArrayList(
+                        "Todas",
+                        "Activas",
+                        "Inactivas"
+                )
+        );
+
+        cmbFiltroEstado.setValue("Todas");
+
+        categoriasFiltradas =
+                new FilteredList<>(
+                        categorias,
+                        categoria -> true
+                );
+
+        tblCategorias.setItems(categoriasFiltradas);
+
+        txtBuscar.textProperty().addListener(
+                (observable, anterior, nuevo) ->
+                        aplicarFiltros()
+        );
+
+        cmbFiltroEstado.valueProperty().addListener(
+                (observable, anterior, nuevo) ->
+                        aplicarFiltros()
+        );
+    }
+
+    private void aplicarFiltros() {
+        categoriasFiltradas.setPredicate(categoria -> {
+
+            String texto = txtBuscar.getText();
+
+            if (texto == null) {
+                texto = "";
+            }
+
+            texto = texto.toLowerCase().trim();
+
+            boolean coincideBusqueda =
+                    texto.isEmpty()
+                            || categoria.getNombre()
+                            .toLowerCase()
+                            .contains(texto);
+
+            String estado =
+                    cmbFiltroEstado.getValue();
+
+            boolean coincideEstado = true;
+
+            if ("Activas".equals(estado)) {
+                coincideEstado =
+                        categoria.isActiva();
+
+            } else if ("Inactivas".equals(estado)) {
+                coincideEstado =
+                        !categoria.isActiva();
+            }
+
+            return coincideBusqueda
+                    && coincideEstado;
+        });
     }
 
     private void configurarSeleccionTabla() {
@@ -81,21 +156,33 @@ public class CategoriaController {
                         (observable, anterior, seleccionada) -> {
 
                             if (seleccionada != null) {
-                                categoriaSeleccionada = seleccionada;
-                                cargarCategoriaFormulario(seleccionada);
+                                categoriaSeleccionada =
+                                        seleccionada;
+
+                                cargarCategoriaFormulario(
+                                        seleccionada
+                                );
                             }
                         }
                 );
     }
 
-    private void cargarCategoriaFormulario(Categoria categoria) {
-        txtNombre.setText(categoria.getNombre());
-        chkActiva.setSelected(categoria.isActiva());
+    private void cargarCategoriaFormulario(
+            Categoria categoria
+    ) {
+        txtNombre.setText(
+                categoria.getNombre()
+        );
+
+        chkActiva.setSelected(
+                categoria.isActiva()
+        );
     }
 
     @FXML
     private void guardarCategoria() {
-        String nombre = txtNombre.getText().trim();
+        String nombre =
+                txtNombre.getText().trim();
 
         if (nombre.isEmpty()) {
             mostrarAlerta(
@@ -111,12 +198,17 @@ public class CategoriaController {
             return;
         }
 
-        Categoria categoria = new Categoria();
+        Categoria categoria =
+                new Categoria();
 
         categoria.setNombre(nombre);
-        categoria.setActiva(chkActiva.isSelected());
+
+        categoria.setActiva(
+                chkActiva.isSelected()
+        );
 
         if (categoriaDAO.guardar(categoria)) {
+
             mostrarInformacion(
                     "Categoría guardada correctamente."
             );
@@ -133,6 +225,7 @@ public class CategoriaController {
 
     @FXML
     private void actualizarCategoria() {
+
         if (categoriaSeleccionada == null) {
             mostrarAlerta(
                     "Seleccione una categoría para actualizar."
@@ -140,7 +233,8 @@ public class CategoriaController {
             return;
         }
 
-        String nombre = txtNombre.getText().trim();
+        String nombre =
+                txtNombre.getText().trim();
 
         if (nombre.isEmpty()) {
             mostrarAlerta(
@@ -159,7 +253,10 @@ public class CategoriaController {
             return;
         }
 
-        categoriaSeleccionada.setNombre(nombre);
+        categoriaSeleccionada.setNombre(
+                nombre
+        );
+
         categoriaSeleccionada.setActiva(
                 chkActiva.isSelected()
         );
@@ -167,6 +264,7 @@ public class CategoriaController {
         if (categoriaDAO.actualizar(
                 categoriaSeleccionada
         )) {
+
             mostrarInformacion(
                     "Categoría actualizada correctamente."
             );
@@ -182,8 +280,9 @@ public class CategoriaController {
     }
 
     private void configurarBotonEliminar() {
-        colAcciones.setCellFactory(columna ->
-                new TableCell<>() {
+
+        colAcciones.setCellFactory(
+                columna -> new TableCell<>() {
 
                     private final Button btnEliminar =
                             new Button("Eliminar");
@@ -196,7 +295,9 @@ public class CategoriaController {
                                             .getItems()
                                             .get(getIndex());
 
-                            eliminarCategoria(categoria);
+                            eliminarCategoria(
+                                    categoria
+                            );
                         });
                     }
 
@@ -205,7 +306,10 @@ public class CategoriaController {
                             Void item,
                             boolean empty
                     ) {
-                        super.updateItem(item, empty);
+                        super.updateItem(
+                                item,
+                                empty
+                        );
 
                         if (empty) {
                             setGraphic(null);
@@ -220,8 +324,11 @@ public class CategoriaController {
     private void eliminarCategoria(
             Categoria categoria
     ) {
+
         Alert confirmacion =
-                new Alert(Alert.AlertType.CONFIRMATION);
+                new Alert(
+                        Alert.AlertType.CONFIRMATION
+                );
 
         confirmacion.setTitle(
                 "Eliminar categoría"
@@ -239,11 +346,13 @@ public class CategoriaController {
                 confirmacion.showAndWait();
 
         if (resultado.isPresent()
-                && resultado.get() == ButtonType.OK) {
+                && resultado.get()
+                == ButtonType.OK) {
 
             if (categoriaDAO.eliminar(
                     categoria.getId()
             )) {
+
                 mostrarInformacion(
                         "Categoría eliminada correctamente."
                 );
@@ -265,6 +374,7 @@ public class CategoriaController {
         categoriaSeleccionada = null;
 
         txtNombre.clear();
+
         chkActiva.setSelected(true);
 
         tblCategorias
@@ -272,9 +382,13 @@ public class CategoriaController {
                 .clearSelection();
     }
 
-    private void mostrarAlerta(String mensaje) {
+    private void mostrarAlerta(
+            String mensaje
+    ) {
         Alert alert =
-                new Alert(Alert.AlertType.WARNING);
+                new Alert(
+                        Alert.AlertType.WARNING
+                );
 
         alert.setTitle("Categorías");
         alert.setHeaderText(null);
@@ -282,9 +396,13 @@ public class CategoriaController {
         alert.showAndWait();
     }
 
-    private void mostrarInformacion(String mensaje) {
+    private void mostrarInformacion(
+            String mensaje
+    ) {
         Alert alert =
-                new Alert(Alert.AlertType.INFORMATION);
+                new Alert(
+                        Alert.AlertType.INFORMATION
+                );
 
         alert.setTitle("Categorías");
         alert.setHeaderText(null);
