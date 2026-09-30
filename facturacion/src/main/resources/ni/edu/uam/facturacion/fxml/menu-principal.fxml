@@ -30,10 +30,10 @@
     <center>
         <VBox alignment="CENTER" spacing="15.0" BorderPane.alignment="CENTER">
             <children>
-                <Label style="-fx-font-size: 28px; -fx-font-weight: bold;" text="Sistema de Facturación" textFill="#c827f5" />
-                <Label style="-fx-font-size: 16px;" text="Persistencia de datos con PostgreSQL" textFill="#c827f5" />
-                <Button mnemonicParsing="false" onAction="#abrirCategorias" prefHeight="45.0" prefWidth="220.0" text="Gestionar Categorías" textFill="#c827f5" />
-                <Button mnemonicParsing="false" onAction="#abrirProductos" prefHeight="45.0" prefWidth="220.0" text="Gestionar Productos" textFill="#c827f5" />
+                <Label style="-fx-font-size: 28px; -fx-font-weight: bold;" text="Sistema de Facturación" textFill="#187A8C" />
+                <Label style="-fx-font-size: 16px;" text="Persistencia de datos con PostgreSQL" textFill="#1E9DB3" />
+                <Button mnemonicParsing="false" onAction="#abrirCategorias" prefHeight="45.0" prefWidth="220.0" text="Gestionar Categorías" textFill="#25BFDA" />
+                <Button mnemonicParsing="false" onAction="#abrirProductos" prefHeight="45.0" prefWidth="220.0" text="Gestionar Productos" textFill="#25BFDA" />
             </children>
             <padding>
                 <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
